@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EL Nonso Niche Finder</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<style>
+:root{--bg:#f6f6f4;--card:#fff;--ink:#1c1c1a;--mut:#6b6b66;--line:#e3e2dd;--acc:#d6382b;--acc2:#b02a1f;--soft:#fbeeec;--ok:#1f7a4a;--okbg:#e5f4ec;--warn:#9a6a00;--warnbg:#fbf2dc;--bad:#8a8a85;--badbg:#efefec;--hi:#fff3b0}
+@media (prefers-color-scheme:dark){:root{--bg:#141413;--card:#1e1e1c;--ink:#ececea;--mut:#9c9b96;--line:#33332f;--acc:#ff5a4a;--acc2:#ff7a6c;--soft:#3a1f1c;--ok:#5fd394;--okbg:#173525;--warn:#f0c252;--warnbg:#3a2f12;--bad:#9c9b96;--badbg:#2a2a27;--hi:#4a4214}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:5;flex-wrap:wrap}
+header h1{font-size:18px;margin:0;display:flex;align-items:center;gap:8px}
+header h1 .dot{width:22px;height:16px;border-radius:5px;background:var(--acc);display:inline-block;position:relative}
+header h1 .dot:after{content:"";position:absolute;left:8px;top:4px;border-left:7px solid #fff;border-top:4px solid transparent;border-bottom:4px solid transparent}
+.pill{font-size:12px;padding:4px 10px;border-radius:99px;background:var(--bg);border:1px solid var(--line);color:var(--mut)}
+nav{display:flex;gap:4px;padding:10px 20px 0;overflow-x:auto;border-bottom:1px solid var(--line);background:var(--card)}
+nav button{border:0;background:none;padding:10px 14px;font:inherit;color:var(--mut);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap}
+nav button.on{color:var(--ink);border-color:var(--acc);font-weight:600}
+main{max-width:1280px;margin:0 auto;padding:20px 16px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
+h2{font-size:17px;margin:0 0 10px}h3{font-size:15px;margin:0 0 8px}
+.muted{color:var(--mut)}.sub{font-size:12.5px;color:var(--mut)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}.end{justify-content:flex-end}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+label{font-size:13px;color:var(--mut);display:block}
+label>input,label>select,label>textarea{margin-top:4px}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+textarea{resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-offset:-1px}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--acc);background:var(--acc);color:#fff;padding:8px 14px;font-weight:600}
+button:hover{background:var(--acc2)}button:disabled{opacity:.5;cursor:wait}
+button.ghost{background:transparent;color:var(--ink);border-color:var(--line);font-weight:500}
+button.ghost:hover{background:var(--bg)}
+button.sm{padding:4px 10px;font-size:13px}
+button.link,button.th{background:none;border:0;padding:0;color:inherit;font-weight:600;text-align:left}
+button.link:hover{color:var(--acc);background:none;text-decoration:underline}
+button.th{font-weight:600;font-size:12.5px;color:var(--mut)}button.th:hover{background:none;color:var(--ink)}
+button.x{background:none;border:0;color:var(--mut);padding:4px 8px}button.x:hover{background:var(--soft);color:var(--acc)}
+.chk{display:flex;gap:6px;align-items:center;color:var(--ink)}.chk input{width:auto;margin:0}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px;margin-top:12px}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;white-space:nowrap}
+th{background:var(--bg);font-size:12.5px;color:var(--mut);position:sticky;top:0}
+tr:last-child td{border-bottom:0}tr.sel td{background:var(--soft)}
+td.vid{display:flex;gap:10px;white-space:normal;min-width:340px}
+td.vid img{width:120px;aspect-ratio:16/9;object-fit:cover;border-radius:6px;flex:none;background:var(--line)}
+td.chn{white-space:normal;min-width:240px}
+td.chn img{width:36px;height:36px;border-radius:50%;float:left;margin-right:10px;background:var(--line)}
+.vtitle{color:var(--ink);text-decoration:none;font-weight:600}.vtitle:hover{color:var(--acc)}
+a{color:var(--acc)}
+.b{font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;margin-left:4px;letter-spacing:.02em}
+.hot{background:var(--okbg);color:var(--ok)}.ok{background:var(--warnbg);color:var(--warn)}.cold{background:var(--badbg);color:var(--bad)}.new{background:var(--soft);color:var(--acc)}
+.hi{background:var(--hi);padding:1px 5px;border-radius:4px;font-weight:700}
+.tag{display:inline-block;font-size:11.5px;background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:1px 8px;margin:2px 3px 0 0}
+.stat{background:var(--bg);border-radius:10px;padding:10px 12px}.stat b{display:block;font-size:20px}.stat span{font-size:12px;color:var(--mut)}
+.status{font-size:13.5px;margin-top:10px;min-height:20px}.err{color:var(--acc)}.good{color:var(--ok)}
+.ai{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-top:14px;background:var(--bg)}
+.md{overflow-x:auto}.md table{font-size:13px;margin:8px 0}.md td,.md th{white-space:normal;border:1px solid var(--line)}
+.md h2{font-size:16px;margin:18px 0 6px}.md h3{font-size:14.5px;margin:14px 0 6px}.md pre{white-space:pre-wrap}
+.md code{background:var(--card);padding:1px 4px;border-radius:4px}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--acc);border-radius:50%;animation:s 1s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes s{to{transform:rotate(360deg)}}
+.help{font-size:13.5px}.help li{margin:4px 0}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg label{display:flex;align-items:center;gap:6px;padding:7px 12px;color:var(--ink);cursor:pointer;margin:0}
+.seg input{width:auto;margin:0}.seg label+label{border-left:1px solid var(--line)}
+@media (max-width:640px){main{padding:14px 12px 50px}header,nav{padding-left:12px;padding-right:12px}td.vid img{width:88px}}
+</style>
+</head>
+<body>
+<header>
+  <h1><span class="dot"></span>EL Nonso Niche Finder</h1>
+  <div class="row"><span class="pill" id="quota">Quota today: 0 / 10,000</span></div>
+</header>
+<nav>
+  <button class="tab on" data-tab="scan">1 · Niche Scanner</button>
+  <button class="tab" data-tab="new">2 · Rising New Channels</button>
+  <button class="tab" data-tab="deep">3 · Channel Deep-Dive</button>
+  <button class="tab" data-tab="ai">4 · AI Prompt Studio</button>
+  <button class="tab" data-tab="settings">Settings &amp; API keys</button>
+</nav>
+<main>
+
+<!-- SCANNER -->
+<section class="panel" id="p-scan">
+  <div class="card">
+    <div class="row between"><h2>Scan niches</h2><span class="sub">Each keyword pulls the top-viewed recent videos, then scores how open the niche is to new channels.</span></div>
+    <div class="grid" style="grid-template-columns:2fr 1fr">
+      <label>Keywords / niche ideas (one per line)
+        <textarea id="kws" rows="6" placeholder="stoic philosophy&#10;ai history facts&#10;scary stories animated&#10;luxury lifestyle motivation"></textarea>
+      </label>
+      <div>
+        <label>Let AI suggest niches around a topic
+          <input id="seed" placeholder="e.g. history, finance, animals (blank = anything trending)">
+        </label>
+        <button class="ghost" style="margin-top:8px;width:100%" id="suggestBtn">✨ Suggest niche keywords</button>
+        <p class="sub">Adds ~12 keyword ideas to the list. Uses Gemini, no YouTube quota.</p>
+      </div>
+    </div>
+    <div class="grid" style="margin-top:10px">
+      <label>Published within<select id="days"><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option><option value="180">Last 6 months</option><option value="365">Last 12 months</option></select></label>
+      <label>Format<select id="dur"><option value="shorts" selected>Shorts (≤ 3 min)</option><option value="any">Any length</option><option value="medium">Medium (4–20 min)</option><option value="long">Long (20+ min)</option></select></label>
+      <label>Rank results by<select id="order"><option value="viewCount" selected>Most viewed</option><option value="relevance">Relevance</option></select></label>
+      <label>Videos per keyword<select id="pages"><option value="1" selected>50 (100 units)</option><option value="2">100 (200 units)</option></select></label>
+      <label>Region (optional)<input id="region" placeholder="US, GB, NG…" maxlength="2"></label>
+      <label>Language (optional)<input id="lang" placeholder="en, es, fr…" maxlength="5"></label>
+    </div>
+    <div class="row" style="margin-top:14px"><button id="scanBtn">Scan niches</button><span class="sub" id="cost"></span></div>
+    <div class="status" id="scanStatus"></div>
+  </div>
+  <div class="card">
+    <div class="row between"><h2>Niche leaderboard</h2>
+      <details class="sub"><summary>How the score works</summary>
+        <div style="max-width:520px;margin-top:6px">Score (0–100) = 40% <b>demand</b> (median views per day) + 25% <b>outlier rate</b> (videos with 2× more views than the channel has subscribers) + 20% <b>small-channel share</b> (results from channels under 50k subs) + 15% <b>new-channel share</b> (channels under 12 months old). High score = people are watching <i>and</i> small or new channels are getting those views.</div>
+      </details>
+    </div>
+    <div id="nicheTable"></div>
+  </div>
+  <div id="nicheDetail"></div>
+</section>
+
+<!-- NEW CHANNELS -->
+<section class="panel" id="p-new" hidden>
+  <div class="card">
+    <h2>Rising new channels</h2>
+    <p class="sub">Young channels that showed up in your scans. These are proof that a newcomer can win in a niche, and good examples to study.</p>
+    <div class="grid">
+      <label>Channel age up to<select id="nAge"><option value="3">3 months</option><option value="6">6 months</option><option value="12" selected>12 months</option><option value="24">24 months</option><option value="1200">Any age</option></select></label>
+      <label>Sort by<select id="nSort"><option value="lvpd" selected>Views per day (since creation)</option><option value="avg">Avg views per video</option><option value="bestViews">Best video in scan</option><option value="subs">Subscribers</option><option value="views">Total views</option></select></label>
+      <label>Min avg views / video<input id="nMin" type="number" min="0" step="1000" value="0"></label>
+    </div>
+    <div id="newTable"></div>
+  </div>
+</section>
+
+<!-- DEEP DIVE -->
+<section class="panel" id="p-deep" hidden>
+  <div class="card">
+    <h2>Channel deep-dive</h2>
+    <p class="sub">Paste a channel URL, @handle or channel ID. Loads the last 50 uploads (~3 quota units) and flags the videos that beat the channel's normal views.</p>
+    <div class="row"><input id="deepIn" placeholder="https://www.youtube.com/@channelname" style="flex:1;min-width:220px"><button id="deepBtn">Analyze channel</button></div>
+  </div>
+  <div id="deepOut"></div>
+</section>
+
+<!-- AI STUDIO -->
+<section class="panel" id="p-ai" hidden>
+  <div class="card">
+    <h2>AI Prompt Studio</h2>
+    <p class="sub">Turns a niche or winning video into ready-to-use prompts for script, voiceover and AI visuals. Tip: click <b>✨ Prompts</b> on any video to fill this in.</p>
+    <div class="grid" style="grid-template-columns:1fr 1fr">
+      <label>Niche / topic<input id="aNiche" placeholder="e.g. dark history facts"></label>
+      <label>What to generate<select id="aTask">
+        <option value="package" selected>Full video package (titles, hook, script, scene prompts, thumbnail, SEO)</option>
+        <option value="ideas">15 video ideas with hooks</option>
+        <option value="visuals">Scene-by-scene visual prompts only</option>
+        <option value="batch">Batch: 5 ready-to-produce Shorts</option>
+      </select></label>
+    </div>
+    <label style="margin-top:10px">Reference video or winners to learn from (optional)
+      <textarea id="aRef" rows="3" placeholder="Paste a winning video title, or click ✨ Prompts on a video in the scanner"></textarea>
+    </label>
+    <div class="grid" style="margin-top:10px">
+      <div><label>Format</label><div class="seg" style="margin-top:4px"><label><input type="radio" name="aFmt" value="shorts" checked> Shorts (9:16)</label><label><input type="radio" name="aFmt" value="long"> Faceless long-form (16:9)</label></div></div>
+      <label>AI visual tool<select id="aTool"><option>Generic (works in any tool)</option><option>Google Veo</option><option>OpenAI Sora</option><option>Kling</option><option>Runway</option><option>Midjourney</option><option>Leonardo AI</option><option>Ideogram</option><option>Flux</option></select></label>
+      <label>Tone<select id="aTone"><option>Storytelling / suspense</option><option>Documentary</option><option>Energetic &amp; punchy</option><option>Calm &amp; educational</option><option>Funny</option><option>Motivational</option></select></label>
+      <label>Visual style<input id="aStyle" placeholder="e.g. cinematic, 3D Pixar, anime, dark oil painting"></label>
+      <label>Language<input id="aLang" value="English"></label>
+    </div>
+    <label style="margin-top:10px">Extra instructions (optional)<textarea id="aExtra" rows="2" placeholder="e.g. target US audience, include a CTA to follow, keep it family-friendly"></textarea></label>
+    <div class="row" style="margin-top:14px"><button id="aBtn">✨ Generate</button><span class="sub" id="aModel"></span></div>
+    <div id="aOut"></div>
+  </div>
+</section>
+
+<!-- SETTINGS -->
+<section class="panel" id="p-settings" hidden>
+  <div class="card">
+    <h2>API keys</h2>
+    <p class="sub">Keys are saved only in this browser on this computer. They go straight to Google and nowhere else.</p>
+    <div class="grid" style="grid-template-columns:1fr 1fr">
+      <label>YouTube Data API v3 key<input id="ytKey" type="password" autocomplete="off" placeholder="AIza…"></label>
+      <label>Gemini API key<input id="gemKey" type="password" autocomplete="off" placeholder="AIza…"></label>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:10px">
+      <label>Gemini model<select id="gemModel"><option value="gemini-2.5-flash">gemini-2.5-flash</option></select></label>
+      <div style="display:flex;align-items:flex-end;gap:8px"><button class="ghost" id="loadModels">Load my available models</button></div>
+    </div>
+    <div class="row" style="margin-top:14px"><button id="saveKeys">Save &amp; test keys</button><button class="ghost" id="clearData">Clear saved scans</button></div>
+    <div class="status" id="keyStatus"></div>
+  </div>
+  <div class="card help">
+    <h3>Getting your keys (5 minutes)</h3>
+    <b>YouTube Data API v3</b>
+    <ol>
+      <li>Go to <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">console.cloud.google.com</a> and create (or pick) a project.</li>
+      <li>Open <i>APIs &amp; Services → Library</i>, search for <b>YouTube Data API v3</b>, and click <b>Enable</b>.</li>
+      <li>Open <i>APIs &amp; Services → Credentials → Create credentials → API key</i>.</li>
+      <li>Edit the key and under <b>API restrictions</b> choose <i>Restrict key → YouTube Data API v3</i>. Leave <b>Application restrictions</b> on <i>None</i>: this file runs from your computer, so a "Websites" restriction will block it.</li>
+    </ol>
+    <b>Gemini</b>
+    <ol><li>Go to <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> and click <b>Create API key</b>. The free tier is enough to start.</li></ol>
+    <b>Quota cheat-sheet</b>
+    <ul><li>You get 10,000 YouTube units a day. The counter resets at midnight Pacific Time (8–9 AM in Lagos).</li><li>One keyword scan ≈ 102 units, so about 90 keyword scans a day. A channel deep-dive ≈ 3 units.</li><li>The counter at the top is an estimate. The exact number is in Google Cloud Console → Quotas.</li></ul>
+  </div>
+</section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s);
+const store={get(k,d){try{const v=localStorage.getItem('nf_'+k);return v===null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('nf_'+k,JSON.stringify(v));return true}catch(e){return false}}};
+const S={niches:store.get('niches',[]),active:null,sort:{key:'views',dir:-1},dsort:{key:'ratio',dir:-1},filter:{small:false,newc:false},deep:null,ai:{},vmap:{}};
+const chCache={};
+S.niches.forEach(n=>Object.assign(chCache,n.channels));
+
+/* ---------- helpers ---------- */
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nf=new Intl.NumberFormat('en',{notation:'compact',maximumFractionDigits:1});
+const fmt=n=>n==null||isNaN(n)?'–':nf.format(Math.round(n));
+const pct=x=>Math.round((x||0)*100)+'%';
+const median=a=>{if(!a.length)return 0;const s=[...a].sort((x,y)=>x-y),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2};
+const daysSince=d=>Math.max(1,(Date.now()-new Date(d).getTime())/864e5);
+const ageLabel=d=>d==null?'–':d<1.5?'1d':d<45?Math.round(d)+'d':d<365?Math.round(d/30.4)+'mo':(d/365).toFixed(1)+'y';
+const durStr=s=>{s=Math.round(s||0);const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=String(s%60).padStart(2,'0');return h?`${h}:${String(m).padStart(2,'0')}:${x}`:`${m}:${x}`};
+const durLabel=d=>({shorts:'Shorts',any:'any length',medium:'4–20 min',long:'20+ min'}[d]||d);
+const mult=x=>{if(x==null)return '–';const t=x>=10?Math.round(x)+'×':x.toFixed(1)+'×';return x>=3?`<span class="hi">${t}</span>`:t};
+function parseDur(d){const m=/P(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/.exec(d||'');return m?(+m[1]||0)*86400+(+m[2]||0)*3600+(+m[3]||0)*60+(+m[4]||0):0}
+function md(t){if(window.marked&&window.DOMPurify)return DOMPurify.sanitize(marked.parse(t));return '<pre>'+esc(t)+'</pre>'}
+function status(el,msg,cls=''){el.className='status '+cls;el.innerHTML=msg}
+
+/* ---------- quota ---------- */
+const qDay=()=>new Date().toLocaleDateString('en-US',{timeZone:'America/Los_Angeles'});
+function getQuota(){let q=store.get('quota',{day:'',used:0});if(q.day!==qDay())q={day:qDay(),used:0};return q}
+function addQuota(n){const q=getQuota();q.used+=n;store.set('quota',q);renderQuota()}
+function renderQuota(){const u=getQuota().used;$('#quota').textContent=`Quota today: ~${u.toLocaleString()} / 10,000`;$('#quota').style.color=u>9000?'var(--acc)':''}
+
+/* ---------- YouTube API ---------- */
+async function yt(ep,params,cost){
+  const key=store.get('ytKey','');if(!key)throw new Error('Add your YouTube API key in Settings first.');
+  const u=new URL('https://www.googleapis.com/youtube/v3/'+ep);
+  Object.entries(params).forEach(([k,v])=>{if(v!==''&&v!=null)u.searchParams.set(k,v)});
+  u.searchParams.set('key',key);
+  const r=await fetch(u);let j;try{j=await r.json()}catch(e){throw new Error('YouTube API returned HTTP '+r.status)}
+  addQuota(cost);
+  if(j.error){const reason=j.error.errors?.[0]?.reason;throw new Error(reason==='quotaExceeded'?'Daily YouTube quota used up. It resets at midnight Pacific Time.':'YouTube API: '+j.error.message)}
+  return j;
+}
+const chunks=(a,n)=>{const o=[];for(let i=0;i<a.length;i+=n)o.push(a.slice(i,i+n));return o};
+async function fetchVideos(ids){let out=[];for(const c of chunks(ids,50)){const j=await yt('videos',{part:'snippet,statistics,contentDetails',id:c.join(','),maxResults:50},1);out=out.concat(j.items||[])}return out}
+function chFrom(c){return{id:c.id,title:c.snippet.title,handle:c.snippet.customUrl||'',thumb:c.snippet.thumbnails?.default?.url||'',created:c.snippet.publishedAt,country:c.snippet.country||'',subs:c.statistics.hiddenSubscriberCount?null:+c.statistics.subscriberCount||0,views:+c.statistics.viewCount||0,videoCount:+c.statistics.videoCount||0,uploads:c.contentDetails?.relatedPlaylists?.uploads||''}}
+async function fetchChannels(ids){const need=ids.filter(id=>!chCache[id]);for(const c of chunks(need,50)){const j=await yt('channels',{part:'snippet,statistics,contentDetails',id:c.join(','),maxResults:50},1);(j.items||[]).forEach(x=>chCache[x.id]=chFrom(x))}}
+function toRow(v){
+  const ch=chCache[v.snippet.channelId]||{};const st=v.statistics||{};
+  const views=+st.viewCount||0,likes=+st.likeCount||0,comments=+st.commentCount||0,age=daysSince(v.snippet.publishedAt);
+  const t=v.snippet.thumbnails||{};
+  return{id:v.id,title:v.snippet.title,channelId:v.snippet.channelId,channelTitle:v.snippet.channelTitle,thumb:(t.medium||t.default||{}).url||'',published:v.snippet.publishedAt,ageDays:age,dur:parseDur(v.contentDetails?.duration),views,likes,comments,vpd:views/age,eng:views?(likes+comments)/views:0,subs:ch.subs??null,chAgeDays:ch.created?daysSince(ch.created):null,outlier:ch.subs==null?null:views/Math.max(ch.subs,100)};
+}
+
+/* ---------- scanning ---------- */
+function metrics(rows,channels){
+  const ws=rows.filter(r=>r.subs!=null),chs=Object.values(channels);
+  return{n:rows.length,medViews:median(rows.map(r=>r.views)),medVpd:median(rows.map(r=>r.vpd)),top:rows.reduce((a,r)=>Math.max(a,r.views),0),
+    outlierRate:ws.length?ws.filter(r=>r.outlier>=2).length/ws.length:0,
+    smallShare:ws.length?ws.filter(r=>r.subs<50000).length/ws.length:0,
+    bigShare:ws.length?ws.filter(r=>r.subs>=1e6).length/ws.length:0,
+    newCh:chs.filter(c=>daysSince(c.created)<=365).length,chCount:chs.length,
+    newShare:chs.length?chs.filter(c=>daysSince(c.created)<=365).length/chs.length:0};
+}
+const nicheScore=m=>Math.round(100*(0.4*Math.min(1,Math.log10(m.medVpd+1)/4.5)+0.25*m.outlierRate+0.2*m.smallShare+0.15*Math.min(1,m.newShare*2)));
+const badge=s=>s>=65?'<span class="b hot">HOT</span>':s>=45?'<span class="b ok">PROMISING</span>':'<span class="b cold">TOUGH</span>';
+
+async function scanKeyword(kw,o){
+  const after=new Date(Date.now()-o.days*864e5).toISOString();
+  let ids=[],token='';
+  for(let p=0;p<o.pages;p++){
+    const j=await yt('search',{part:'snippet',type:'video',q:kw,order:o.order,publishedAfter:after,maxResults:50,regionCode:o.region,relevanceLanguage:o.lang,videoDuration:o.dur==='shorts'?'short':o.dur,pageToken:token},100);
+    ids.push(...(j.items||[]).map(i=>i.id?.videoId).filter(Boolean));token=j.nextPageToken;if(!token)break;
+  }
+  ids=[...new Set(ids)];
+  const vids=await fetchVideos(ids);
+  await fetchChannels([...new Set(vids.map(v=>v.snippet.channelId))]);
+  let rows=vids.map(toRow);if(o.dur==='shorts')rows=rows.filter(r=>r.dur<=180);
+  const channels={};rows.forEach(r=>{if(chCache[r.channelId])channels[r.channelId]=chCache[r.channelId]});
+  return{keyword:kw,scannedAt:Date.now(),opts:o,videos:rows,channels,m:metrics(rows,channels)};
+}
+function saveNiches(){if(!store.set('niches',S.niches))status($('#scanStatus'),'Note: too much data to keep saved in the browser. Remove a few niches to keep them after closing.','err')}
+function scanCost(){const k=$('#kws').value.split('\n').filter(s=>s.trim()).length,p=+$('#pages').value;$('#cost').textContent=k?`≈ ${(k*(p*100+2)).toLocaleString()} quota units for ${k} keyword${k>1?'s':''}`:''}
+async function runScan(){
+  const kws=[...new Set($('#kws').value.split('\n').map(s=>s.trim()).filter(Boolean))],st=$('#scanStatus');
+  if(!kws.length)return status(st,'Enter at least one keyword.','err');
+  const o={days:+$('#days').value,order:$('#order').value,dur:$('#dur').value,region:$('#region').value.trim().toUpperCase(),lang:$('#lang').value.trim().toLowerCase(),pages:+$('#pages').value};
+  $('#scanBtn').disabled=true;let done=0;
+  for(const [i,kw] of kws.entries()){
+    status(st,`<span class="spin"></span>Scanning ${i+1}/${kws.length}: “${esc(kw)}”…`);
+    try{const n=await scanKeyword(kw,o);const ex=S.niches.findIndex(x=>x.keyword.toLowerCase()===kw.toLowerCase());if(ex>=0)S.niches[ex]=n;else S.niches.push(n);S.active=S.niches.indexOf(n);done++;saveNiches();renderNiches();renderDetail()}
+    catch(e){status(st,esc(e.message),'err');$('#scanBtn').disabled=false;return}
+  }
+  status(st,`Done. Scanned ${done} niche${done>1?'s':''}. Click a niche to see its videos.`,'good');$('#scanBtn').disabled=false;
+}
+
+/* ---------- render: niches ---------- */
+function renderNiches(){
+  const el=$('#nicheTable');
+  if(!S.niches.length){el.innerHTML='<p class="muted">No niches scanned yet. Add keywords above (or let AI suggest some) and hit <b>Scan niches</b>.</p>';return}
+  const list=S.niches.map((n,i)=>({n,i,s:nicheScore(n.m)})).sort((a,b)=>b.s-a.s);
+  el.innerHTML=`<div class="tw"><table><thead><tr><th>Niche</th><th>Score</th><th>Median views</th><th>Median views/day</th><th>Top video</th><th title="% of videos with 2× more views than the channel has subscribers">Outlier rate</th><th title="% of results from channels under 50k subs">Small channels</th><th title="Channels under 12 months old">New channels</th><th title="% of results from 1M+ sub channels">Big channels</th><th></th></tr></thead><tbody>${
+  list.map(({n,i,s})=>`<tr class="${S.active===i?'sel':''}"><td><button class="link" data-act="view" data-i="${i}">${esc(n.keyword)}</button><div class="sub">${n.m.n} videos · ${n.opts.days}d · ${durLabel(n.opts.dur)}</div></td>
+  <td><b>${s}</b>${badge(s)}</td><td>${fmt(n.m.medViews)}</td><td>${fmt(n.m.medVpd)}</td><td>${fmt(n.m.top)}</td><td>${pct(n.m.outlierRate)}</td><td>${pct(n.m.smallShare)}</td><td>${n.m.newCh} of ${n.m.chCount}</td><td>${pct(n.m.bigShare)}</td>
+  <td><button class="x" data-act="del" data-i="${i}" title="Remove">✕</button></td></tr>`).join('')}</tbody></table></div>`;
+}
+function sortRows(rows,s){rows.sort((a,b)=>{const x=a[s.key],y=b[s.key];if(typeof x==='string')return s.dir*x.localeCompare(y);return s.dir*((x??-1)-(y??-1))})}
+function videoTable(rows,ctx){
+  const sort=ctx==='deep'?S.dsort:S.sort;
+  const cols=[['title','Video'],['views','Views'],['vpd','Views/day'],ctx==='deep'?['ratio','vs. channel median']:['outlier','Views ÷ subs'],['eng','Engagement'],['dur','Length'],['ageDays','Posted']];
+  rows.forEach(r=>S.vmap[r.id]=r);
+  if(!rows.length)return '<p class="muted" style="margin-top:12px">No videos match.</p>';
+  return `<div class="tw"><table><thead><tr>${cols.map(([k,l])=>`<th><button class="th" data-act="sort" data-k="${k}" data-ctx="${ctx}">${l}${sort.key===k?(sort.dir<0?' ↓':' ↑'):''}</button></th>`).join('')}<th></th></tr></thead><tbody>${rows.map(r=>{const u='https://www.youtube.com/watch?v='+encodeURIComponent(r.id);return `<tr>
+  <td class="vid"><a href="${u}" target="_blank" rel="noopener"><img src="${esc(r.thumb)}" loading="lazy" alt=""></a><div><a href="${u}" target="_blank" rel="noopener" class="vtitle">${esc(r.title)}</a>${ctx==='deep'?'':`<div class="sub"><button class="link" style="font-weight:500" data-act="deep" data-id="${esc(r.channelId)}">${esc(r.channelTitle)}</button> · ${r.subs==null?'subs hidden':fmt(r.subs)+' subs'} · channel ${ageLabel(r.chAgeDays)} old${r.chAgeDays!=null&&r.chAgeDays<=365?'<span class="b new">NEW</span>':''}</div>`}</div></td>
+  <td>${fmt(r.views)}</td><td>${fmt(r.vpd)}</td><td>${mult(ctx==='deep'?r.ratio:r.outlier)}</td><td>${(r.eng*100).toFixed(1)}%</td><td>${durStr(r.dur)}</td><td>${ageLabel(r.ageDays)} ago</td>
+  <td><button class="sm ghost" data-act="vprompt" data-id="${esc(r.id)}">✨ Prompts</button></td></tr>`}).join('')}</tbody></table></div>`;
+}
+function aiBox(id){const t=S.ai[id];if(t==null)return '';if(t===0)return '<div class="ai"><span class="spin"></span>Gemini is thinking…</div>';if(t.err)return `<div class="ai err">${esc(t.err)}</div>`;
+  return `<div class="ai"><div class="row end"><button class="sm ghost" data-act="copy" data-k="${id}">Copy</button><button class="sm ghost" data-act="dl" data-k="${id}">Download .md</button></div><div class="md">${md(t)}</div></div>`}
+function renderDetail(){
+  const n=S.niches[S.active],el=$('#nicheDetail');if(!n){el.innerHTML='';return}
+  let rows=n.videos.slice();
+  if(S.filter.small)rows=rows.filter(r=>r.subs!=null&&r.subs<50000);
+  if(S.filter.newc)rows=rows.filter(r=>r.chAgeDays!=null&&r.chAgeDays<=365);
+  sortRows(rows,S.sort);
+  const s=nicheScore(n.m);
+  el.innerHTML=`<div class="card"><div class="row between"><div><h2 style="margin:0">${esc(n.keyword)} <span style="font-weight:400">· ${s}</span>${badge(s)}</h2><div class="sub">Scanned ${new Date(n.scannedAt).toLocaleString()} · last ${n.opts.days} days · ${durLabel(n.opts.dur)}${n.opts.region?' · '+esc(n.opts.region):''}</div></div>
+  <div class="row"><button data-act="ai-niche">✨ AI: analyze this niche</button><button class="ghost" data-act="niche-to-ai">✨ Video ideas</button><button class="ghost" data-act="csv">Export CSV</button></div></div>
+  ${aiBox('niche:'+n.keyword)}
+  <div class="row" style="margin-top:14px"><label class="chk"><input type="checkbox" data-f="small" ${S.filter.small?'checked':''}> Only channels under 50k subs</label><label class="chk"><input type="checkbox" data-f="newc" ${S.filter.newc?'checked':''}> Only channels under 12 months old</label><span class="sub">${rows.length} videos · highlighted = 3×+ outlier</span></div>
+  ${videoTable(rows,'niche')}</div>`;
+}
+
+/* ---------- render: new channels ---------- */
+function renderNew(){
+  const maxD=+$('#nAge').value*30.44,k=$('#nSort').value,min=+$('#nMin').value||0,map={};
+  S.niches.forEach(n=>Object.values(n.channels).forEach(c=>{
+    const e=map[c.id]||(map[c.id]={...c,niches:new Set(),best:null});e.niches.add(n.keyword);
+    n.videos.forEach(v=>{if(v.channelId===c.id&&(!e.best||v.views>e.best.views))e.best=v});
+  }));
+  const list=Object.values(map).map(c=>{const age=daysSince(c.created);return{...c,age,avg:c.videoCount?c.views/c.videoCount:0,lvpd:c.views/age,bestViews:c.best?.views||0,subs:c.subs}}).filter(c=>c.age<=maxD&&c.avg>=min);
+  list.sort((a,b)=>(b[k]||0)-(a[k]||0));
+  const el=$('#newTable');
+  if(!S.niches.length){el.innerHTML='<p class="muted">Scan some niches first. Channels from your scans show up here.</p>';return}
+  if(!list.length){el.innerHTML='<p class="muted">No channels match these filters. Try a wider age range.</p>';return}
+  el.innerHTML=`<div class="tw"><table><thead><tr><th>Channel</th><th>Age</th><th>Subs</th><th>Total views</th><th>Videos</th><th>Avg views/video</th><th>Views/day</th><th>Best video in scan</th><th></th></tr></thead><tbody>${list.slice(0,150).map(c=>`<tr>
+  <td class="chn"><img src="${esc(c.thumb)}" alt="" loading="lazy"><a class="vtitle" href="https://www.youtube.com/channel/${encodeURIComponent(c.id)}" target="_blank" rel="noopener">${esc(c.title)}</a>${c.age<=180?'<span class="b new">NEW</span>':''}<div>${[...c.niches].map(x=>`<span class="tag">${esc(x)}</span>`).join('')}</div></td>
+  <td>${ageLabel(c.age)}<div class="sub">${new Date(c.created).toLocaleDateString()}</div></td><td>${c.subs==null?'hidden':fmt(c.subs)}</td><td>${fmt(c.views)}</td><td>${fmt(c.videoCount)}</td><td><b>${fmt(c.avg)}</b></td><td>${fmt(c.lvpd)}</td>
+  <td style="white-space:normal;min-width:200px">${c.best?`<a href="https://www.youtube.com/watch?v=${encodeURIComponent(c.best.id)}" target="_blank" rel="noopener">${esc(c.best.title)}</a><div class="sub">${fmt(c.best.views)} views</div>`:'–'}</td>
+  <td><button class="sm" data-act="deep" data-id="${esc(c.id)}">Deep-dive</button></td></tr>`).join('')}</tbody></table></div>${list.length>150?'<p class="sub">Showing top 150.</p>':''}`;
+}
+
+/* ---------- deep dive ---------- */
+function parseChannelInput(s){s=s.trim();let m;
+  if((m=s.match(/channel\/(UC[\w-]{22})/)))return{id:m[1]};if(/^UC[\w-]{22}$/.test(s))return{id:s};
+  if((m=s.match(/@([\w.\-·]+)/)))return{forHandle:'@'+m[1]};return{forHandle:'@'+s.replace(/^.*youtube\.com\/(c\/|user\/)?/,'').replace(/[/?].*$/,'')}}
+async function runDeep(input){
+  if(!input.trim())return;showTab('deep');$('#deepIn').value=input;
+  $('#deepOut').innerHTML='<div class="card"><span class="spin"></span>Loading channel…</div>';
+  try{
+    const p=parseChannelInput(input);
+    const j=await yt('channels',{part:'snippet,statistics,contentDetails',...p},1);
+    if(!j.items?.length)throw new Error('Channel not found. Try pasting the full channel URL.');
+    const ch=chFrom(j.items[0]);chCache[ch.id]=ch;
+    let ids=[];
+    if(ch.uploads){try{const pl=await yt('playlistItems',{part:'contentDetails',playlistId:ch.uploads,maxResults:50},1);ids=(pl.items||[]).map(i=>i.contentDetails.videoId)}catch(e){}}
+    const rows=(await fetchVideos(ids)).map(toRow);const med=median(rows.map(r=>r.views))||1;rows.forEach(r=>r.ratio=r.views/med);
+    S.deep={ch,rows,med};renderDeep();
+  }catch(e){$('#deepOut').innerHTML=`<div class="card err">${esc(e.message)}</div>`}
+}
+function renderDeep(){
+  const d=S.deep;if(!d)return;const{ch,rows,med}=d;const r=rows.slice();sortRows(r,S.dsort);
+  const ts=rows.map(x=>new Date(x.published).getTime()),span=ts.length>1?(Math.max(...ts)-Math.min(...ts))/864e5:0;
+  const pace=span?(rows.length-1)/(span/7):0,shorts=rows.length?rows.filter(x=>x.dur<=180).length/rows.length:0;
+  const age=daysSince(ch.created);
+  $('#deepOut').innerHTML=`<div class="card"><div class="row between"><div class="row"><img src="${esc(ch.thumb)}" alt="" style="width:48px;height:48px;border-radius:50%"><div><h2 style="margin:0">${esc(ch.title)}${age<=365?'<span class="b new">NEW</span>':''}</h2><div class="sub">${esc(ch.handle)}${ch.country?' · '+esc(ch.country):''} · created ${new Date(ch.created).toLocaleDateString()} (${ageLabel(age)} ago)</div></div></div>
+  <div class="row"><button data-act="ai-channel">✨ AI: reverse-engineer this channel</button><a class="pill" href="https://www.youtube.com/channel/${encodeURIComponent(ch.id)}" target="_blank" rel="noopener">Open on YouTube ↗</a></div></div>
+  <div class="grid" style="margin-top:14px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
+  ${[['Subscribers',ch.subs==null?'hidden':fmt(ch.subs)],['Total views',fmt(ch.views)],['Videos',fmt(ch.videoCount)],['Avg views/video',fmt(ch.videoCount?ch.views/ch.videoCount:0)],['Views/day (lifetime)',fmt(ch.views/age)],[`Median views (last ${rows.length})`,fmt(med)],['Uploads / week',pace?pace.toFixed(1):'–'],['Shorts share',pct(shorts)]].map(([l,v])=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`).join('')}
+  </div>${aiBox('channel:'+ch.id)}
+  <p class="sub" style="margin-top:14px">Last ${rows.length} uploads. "vs. channel median" shows how far a video beat this channel's normal views. Those are the topics to copy-and-improve.</p>
+  ${videoTable(r,'deep')}</div>`;
+}
+
+/* ---------- Gemini ---------- */
+async function gemini(prompt){
+  const key=store.get('gemKey','');if(!key)throw new Error('Add your Gemini API key in Settings first.');
+  const model=store.get('gemModel','gemini-2.5-flash').replace(/^models\//,'');
+  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{temperature:0.9}})});
+  const j=await r.json().catch(()=>({}));
+  if(j.error)throw new Error('Gemini: '+j.error.message);
+  const t=(j.candidates?.[0]?.content?.parts||[]).filter(p=>!p.thought).map(p=>p.text||'').join('');
+  if(!t)throw new Error('Gemini returned no text'+(j.promptFeedback?.blockReason?' (blocked: '+j.promptFeedback.blockReason+')':'')+'. Try again or pick another model in Settings.');
+  return t;
+}
+async function aiRun(id,prompt,render){S.ai[id]=0;render();try{S.ai[id]=await gemini(prompt)}catch(e){S.ai[id]={err:e.message}}render()}
+async function loadModels(){
+  const key=$('#gemKey').value.trim()||store.get('gemKey','');if(!key)throw new Error('Enter your Gemini key first.');
+  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200',{headers:{'x-goog-api-key':key}});const j=await r.json();
+  if(j.error)throw new Error('Gemini: '+j.error.message);
+  const list=(j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')&&/gemini/i.test(m.name)&&!/(tts|image|embedding|live|audio)/i.test(m.name)).map(m=>m.name.replace('models/',''));
+  if(!list.length)throw new Error('No text models found for this key.');
+  let cur=store.get('gemModel','');
+  if(!list.includes(cur)||!store.get('models',null)){const fl=list.filter(x=>/^gemini-[\d.]+-flash$/.test(x)).sort().reverse();cur=fl[0]||list.find(x=>/flash/.test(x))||list[0]}
+  fillModels(list,cur);store.set('gemModel',cur);store.set('models',list);return list.length;
+}
+function fillModels(list,cur){$('#gemModel').innerHTML=list.map(m=>`<option ${m===cur?'selected':''}>${esc(m)}</option>`).join('');$('#aModel').textContent='Model: '+cur}
+
+/* ---------- prompts ---------- */
+const AUD='The creator runs FACELESS channels (AI-generated visuals + AI/voiceover narration) and focuses on YouTube Shorts.';
+function topLines(rows,n=40){return rows.slice().sort((a,b)=>b.views-a.views).slice(0,n).map(v=>`- "${v.title}" | ${fmt(v.views)} views | ${fmt(v.vpd)}/day | ${durStr(v.dur)} | ${v.channelTitle ? 'channel: '+v.channelTitle+' ' : ''}(${v.subs==null?'subs hidden':fmt(v.subs)+' subs'}${v.chAgeDays!=null?', channel '+ageLabel(v.chAgeDays)+' old':''})`).join('\n')}
+function nichePrompt(n){const m=n.m;return `You are a sharp YouTube niche research analyst. ${AUD}
+Niche keyword: "${n.keyword}"
+Data: top ${m.n} videos (${durLabel(n.opts.dur)}) published in the last ${n.opts.days} days, ranked by ${n.opts.order==='viewCount'?'views':'relevance'}.
+Summary: median views ${fmt(m.medViews)}, median views/day ${fmt(m.medVpd)}, top video ${fmt(m.top)} views, outlier rate (views ≥ 2× channel subs) ${pct(m.outlierRate)}, share of results from channels under 50k subs ${pct(m.smallShare)}, from 1M+ channels ${pct(m.bigShare)}, new channels (<12 months) ${m.newCh} of ${m.chCount}.
+Top videos:
+${topLines(n.videos)}
+
+Write a data-grounded analysis in Markdown:
+## Verdict
+One line: GO / MAYBE / AVOID + opportunity score 1–10 + the main reason.
+## What's winning
+Recurring topics, angles, title patterns, hooks, formats and lengths. Quote real titles from the data as evidence.
+## Competition
+Are small/new channels breaking through or do big channels dominate? Name the channels a newcomer should study.
+## Faceless & Shorts fit
+How easy this is to produce with AI visuals + voiceover, and how to avoid YouTube's "inauthentic / mass-produced / reused content" monetization problems (what original value to add).
+## Monetization
+Likely audience & geography, a rough RPM range (clearly labeled as an estimate), affiliate/sponsor/product angles.
+## Gaps & sub-niches
+3–5 underserved angles inside this niche.
+## 10 video ideas
+Table: Title | Opening line (hook) | Short or Long | Why it should work.
+Do not invent statistics beyond the data, except clearly labeled estimates.`}
+function channelPrompt(d){const c=d.ch;return `You are a YouTube strategist. ${AUD}
+Reverse-engineer this channel so the creator can launch a differentiated competitor (not a copy).
+Channel: ${c.title} ${c.handle} | created ${new Date(c.created).toDateString()} | ${c.subs==null?'subs hidden':fmt(c.subs)+' subs'} | ${fmt(c.views)} total views | ${c.videoCount} videos.
+Last ${d.rows.length} uploads (median ${fmt(d.med)} views), with each video's multiple vs. the channel median:
+${d.rows.slice().sort((a,b)=>b.ratio-a.ratio).map(v=>`- "${v.title}" | ${fmt(v.views)} views | ${v.ratio.toFixed(1)}× median | ${durStr(v.dur)} | ${ageLabel(v.ageDays)} ago`).join('\n')}
+
+Answer in Markdown:
+## The formula
+Content format, likely production workflow (which AI tools / editing style), posting cadence, title & thumbnail patterns.
+## Why the outliers won
+What the top 3–5 videos have in common versus the flops.
+## How to beat them
+5 concrete ways to differentiate (angle, quality, packaging, audience) while staying safe from reused/inauthentic-content policies.
+## 10 video ideas for a competing channel
+Table: Title | Hook | Why it should work.`}
+function studioPrompt(){
+  const niche=$('#aNiche').value.trim()||'(choose a strong faceless niche yourself)',ref=$('#aRef').value.trim(),task=$('#aTask').value,
+    fmtV=document.querySelector('input[name=aFmt]:checked').value,tool=$('#aTool').value,tone=$('#aTone').value,style=$('#aStyle').value.trim(),lang=$('#aLang').value.trim()||'English',extra=$('#aExtra').value.trim();
+  const isS=fmtV==='shorts'||task==='batch';
+  const ctx=`You are an expert YouTube producer specializing in faceless channels made with AI visuals and AI voiceover.
+Niche/topic: ${niche}
+${ref?`Proven winner(s) to learn from. Model the angle and packaging, but do NOT copy:\n${ref}\n`:''}Format: ${isS?'YouTube Shorts, vertical 9:16, 30–60 seconds':'Faceless long-form YouTube video, 16:9, 8–12 minutes'}
+Tone: ${tone}. Language for script/titles: ${lang}.
+Visual style: ${style||'pick the style that fits the niche best and keep it consistent'}.
+Target AI visual tool: ${tool}. Write visual prompts in the way that works best for that tool (for image tools: subject, setting, composition, lighting, style, aspect ratio params like ${isS?'--ar 9:16':'--ar 16:9'} for Midjourney; for video tools: subject + action, camera movement, lighting, mood, clip length 4–8s). Keep the same character/style descriptors in every prompt for visual consistency.
+${extra?'Extra instructions: '+extra+'\n':''}Make the content original and genuinely valuable (facts, story, insight) so it is safe from YouTube's inauthentic/reused-content rules. Flag any claim that should be fact-checked.
+Output clean Markdown. Prompts must be copy-paste ready.`;
+  if(task==='ideas')return ctx+`
+
+Give 15 video ideas. Table: # | Title (under 60 chars) | First-line hook | Core idea in one sentence | Virality angle (curiosity, fear, awe, controversy, relatability…). Then pick the top 3 and explain why.`;
+  if(task==='visuals')return ctx+`
+
+Pick the strongest video idea for this niche (or use the reference). Write the narration broken into beats, then a table: Scene # | Time | Narration line | ${tool} prompt | Camera / motion | On-screen text. ${isS?'8–14 scenes.':'25–40 scenes.'} Finish with one "style anchor" paragraph to prepend to every prompt for consistency.`;
+  if(task==='batch')return ctx+`
+
+Create 5 different ready-to-produce Shorts. For EACH one:
+### Short N: title
+- 3 title options
+- Hook (first 2 seconds, spoken + on-screen text)
+- Full voiceover script (120–160 words) with a loop-back ending that flows into the start
+- Scene table: Scene | Time | Narration | ${tool} prompt | Motion
+- Caption + 5 hashtags`;
+  return ctx+`
+
+Produce a complete video package with these sections:
+## 1. Title options
+5 curiosity-driven titles under 60 characters.
+## 2. Hook
+3 alternative openings for the first ${isS?'2':'15'} seconds (spoken line + on-screen text + visual).
+## 3. Voiceover script
+${isS?'120–160 words with [0:00] style timestamps. End with a line that loops back to the start.':'1,300–1,700 words with [mm:ss] timestamps, chapter headings, and an open loop or pattern-interrupt every 60–90 seconds.'}
+## 4. Scene-by-scene visual prompts
+Table: Scene # | Time | Narration line | ${tool} prompt | Camera / motion | On-screen text. ${isS?'8–14 scenes.':'25–40 scenes.'}
+## 5. Style anchor
+One paragraph to prepend to every visual prompt for a consistent look.
+## 6. ${isS?'Cover frame':'Thumbnail'}
+2 image prompts + 3 short text overlays (max 4 words).
+## 7. Voice & music
+Voice settings (gender, pace, emotion, e.g. for ElevenLabs), music mood, SFX cues.
+## 8. Upload kit
+SEO description (first 2 lines matter most), 10 tags, 5 hashtags, pinned comment to spark replies.`;
+}
+
+/* ---------- tabs & events ---------- */
+function showTab(t){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));document.querySelectorAll('section.panel').forEach(s=>s.hidden=s.id!=='p-'+t);if(t==='new')renderNew();store.set('tab',t);window.scrollTo(0,0)}
+function download(name,text,type='text/markdown'){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}
+function prefillAI({niche,ref,fmt:f,task}){if(niche!=null)$('#aNiche').value=niche;if(ref!=null)$('#aRef').value=ref;if(f)document.querySelector(`input[name=aFmt][value=${f}]`).checked=true;if(task)$('#aTask').value=task;showTab('ai')}
+
+document.addEventListener('click',e=>{
+  const tab=e.target.closest('.tab');if(tab)return showTab(tab.dataset.tab);
+  const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;
+  if(a==='view'){S.active=+b.dataset.i;renderNiches();renderDetail();$('#nicheDetail').scrollIntoView({behavior:'smooth'})}
+  else if(a==='del'){const i=+b.dataset.i;S.niches.splice(i,1);if(S.active===i)S.active=null;else if(S.active>i)S.active--;saveNiches();renderNiches();renderDetail()}
+  else if(a==='sort'){const s=b.dataset.ctx==='deep'?S.dsort:S.sort;if(s.key===b.dataset.k)s.dir*=-1;else{s.key=b.dataset.k;s.dir=b.dataset.k==='title'?1:-1}b.dataset.ctx==='deep'?renderDeep():renderDetail()}
+  else if(a==='deep')runDeep(b.dataset.id);
+  else if(a==='ai-niche'){const n=S.niches[S.active];aiRun('niche:'+n.keyword,nichePrompt(n),renderDetail)}
+  else if(a==='ai-channel'){aiRun('channel:'+S.deep.ch.id,channelPrompt(S.deep),renderDeep)}
+  else if(a==='niche-to-ai'){const n=S.niches[S.active];prefillAI({niche:n.keyword,ref:'Top performers in this niche:\n'+n.videos.slice().sort((x,y)=>y.vpd-x.vpd).slice(0,8).map(v=>`- "${v.title}" (${fmt(v.views)} views, ${durStr(v.dur)})`).join('\n'),fmt:n.opts.dur==='shorts'?'shorts':'long',task:'ideas'})}
+  else if(a==='vprompt'){const v=S.vmap[b.dataset.id];const n=S.niches.find(x=>x.videos.some(y=>y.id===v.id));
+    prefillAI({niche:n?n.keyword:(S.deep?.ch.title||''),ref:`"${v.title}" by ${v.channelTitle}: ${fmt(v.views)} views in ${ageLabel(v.ageDays)}, ${durStr(v.dur)} long${v.subs!=null?`, channel has ${fmt(v.subs)} subs`:''}.`,fmt:v.dur<=180?'shorts':'long',task:'package'})}
+  else if(a==='copy'){const t=S.ai[b.dataset.k];navigator.clipboard?.writeText(t).then(()=>{b.textContent='Copied ✓';setTimeout(()=>b.textContent='Copy',1500)}).catch(()=>{})}
+  else if(a==='dl'){download(b.dataset.k.replace(/[^\w-]+/g,'_')+'.md',S.ai[b.dataset.k])}
+  else if(a==='csv'){const n=S.niches[S.active];const h=['title','url','channel','channel_url','subs','channel_age_days','views','views_per_day','views_per_sub','likes','comments','engagement','duration_sec','published'];
+    const q=x=>`"${String(x??'').replace(/"/g,'""')}"`;
+    const lines=n.videos.map(v=>[v.title,'https://youtu.be/'+v.id,v.channelTitle,'https://www.youtube.com/channel/'+v.channelId,v.subs,Math.round(v.chAgeDays||0),v.views,Math.round(v.vpd),v.outlier?.toFixed(2),v.likes,v.comments,(v.eng*100).toFixed(2)+'%',v.dur,v.published].map(q).join(','));
+    download(n.keyword.replace(/\W+/g,'_')+'_niche.csv','﻿'+[h.join(','),...lines].join('\n'),'text/csv')}
+});
+document.addEventListener('change',e=>{const f=e.target.dataset?.f;if(f){S.filter[f]=e.target.checked;renderDetail()}});
+['nAge','nSort','nMin'].forEach(id=>$('#'+id).addEventListener('input',renderNew));
+['kws','pages'].forEach(id=>$('#'+id).addEventListener('input',scanCost));
+$('#scanBtn').onclick=runScan;
+$('#deepBtn').onclick=()=>runDeep($('#deepIn').value);
+$('#deepIn').addEventListener('keydown',e=>{if(e.key==='Enter')runDeep(e.target.value)});
+$('#suggestBtn').onclick=async e=>{const b=e.target,st=$('#scanStatus');b.disabled=true;status(st,'<span class="spin"></span>Asking Gemini for niche ideas…');
+  try{const seed=$('#seed').value.trim(),fmtTxt=$('#dur').value==='shorts'?'YouTube Shorts':'YouTube videos';
+    const t=await gemini(`${AUD}\nSuggest 12 specific YouTube search keywords for ${fmtTxt} niches that a NEW faceless channel could realistically win in ${seed?`around the topic "${seed}"`:'right now (mix evergreen and currently rising topics)'}. Prefer specific sub-niches over broad categories (e.g. "roman empire facts" not "history"). Each keyword should be 2–5 words, phrased the way viewers search. Output ONLY the keywords, one per line, with no numbering, bullets, quotes or commentary.`);
+    const kws=t.split('\n').map(s=>s.replace(/^[\s\-*\d.)"]+|["*]+$/g,'').trim()).filter(s=>s&&s.length<60).slice(0,15);
+    const cur=$('#kws').value.trim();$('#kws').value=(cur?cur+'\n':'')+kws.join('\n');scanCost();status(st,`Added ${kws.length} keyword ideas. Remove any you don't like, then scan.`,'good')}
+  catch(err){status(st,esc(err.message),'err')}b.disabled=false};
+$('#aBtn').onclick=async e=>{e.target.disabled=true;await aiRun('studio',studioPrompt(),()=>{$('#aOut').innerHTML=aiBox('studio')});e.target.disabled=false};
+$('#saveKeys').onclick=async()=>{const st=$('#keyStatus');store.set('ytKey',$('#ytKey').value.trim());store.set('gemKey',$('#gemKey').value.trim());store.set('gemModel',$('#gemModel').value);$('#aModel').textContent='Model: '+$('#gemModel').value;
+  const out=[];status(st,'<span class="spin"></span>Testing keys…');
+  if(store.get('ytKey','')){try{await yt('videos',{part:'id',chart:'mostPopular',maxResults:1},1);out.push('<span class="good">✓ YouTube key works</span>')}catch(e){out.push('<span class="err">✗ '+esc(e.message)+'</span>')}}else out.push('<span class="err">YouTube key missing</span>');
+  if(store.get('gemKey','')){try{const n=await loadModels();out.push(`<span class="good">✓ Gemini key works (${n} models available)</span>`)}catch(e){out.push('<span class="err">✗ '+esc(e.message)+'</span>')}}else out.push('<span class="err">Gemini key missing</span>');
+  status(st,out.join('<br>'))};
+$('#loadModels').onclick=async()=>{try{const n=await loadModels();status($('#keyStatus'),`Loaded ${n} models.`,'good')}catch(e){status($('#keyStatus'),esc(e.message),'err')}};
+$('#gemModel').onchange=e=>{store.set('gemModel',e.target.value);$('#aModel').textContent='Model: '+e.target.value};
+$('#clearData').onclick=()=>{if(!S.niches.length)return;S.niches=[];S.active=null;saveNiches();renderNiches();renderDetail();status($('#keyStatus'),'Saved scans cleared.','good')};
+
+/* ---------- init ---------- */
+$('#ytKey').value=store.get('ytKey','');$('#gemKey').value=store.get('gemKey','');
+fillModels(store.get('models',[store.get('gemModel','gemini-2.5-flash')]),store.get('gemModel','gemini-2.5-flash'));
+renderQuota();renderNiches();scanCost();
+showTab(store.get('ytKey','')&&store.get('gemKey','')?store.get('tab','scan'):'settings');
+</script>
+</body>
+</html>
